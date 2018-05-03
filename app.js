@@ -1,12 +1,20 @@
 (function() {
   'use strict';
 
-  // TODO add service worker code here
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker
-             .register('./sw.js')
-             .then(function() { console.log('Service Worker Registered'); });
-        toast("We can't cache your app data yet..");
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('service-worker.js', {
+      scope: '././'
+    }).then(function(reg) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', reg.scope);
+                    toast("We WIN !!!");
+    }, function(err) {
+      // registration failed :
+      console.log('ServiceWorker registration failed: ', err);
+              toast("We fail, but it's success for YOU ! ");
+      });
+  });
   }
 
 

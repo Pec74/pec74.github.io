@@ -282,15 +282,13 @@ if ('serviceWorker' in navigator) {
             toaster.toast('All memos deleted.');
           });
     }, function(err) {
-      // registration failed :(
       console.log('ServiceWorker registration failed: ', err);
                   ToasterInstance().then(toaster => {
             toaster.toast('All memos deleted.');
           });
-      }
             });
+  });
   }
-
     </script>
 
 

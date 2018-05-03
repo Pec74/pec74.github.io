@@ -11,4 +11,29 @@ if ('serviceWorker' in navigator) {
       console.log('ServiceWorker registration failed: ', err);
       });
   });
+
+  // SW READY
+  
+    navigator.serviceWorker.ready
+      .then(function(registration) {
+      // SW is Active
+      console.log('A service worker is active:', registration.active);
+    // At this point, you can call methods that require an active
+    // service worker, like registration.pushManager.subscribe()
+      });
+  
+  //SW CONTROLLER
+  
+   // Do a one-off check to see if a service worker's in control.
+    navigator.serviceWorker.controller) {
+      .then(function(controller) {
+        console.log('This page is currently controlled by:',
+      } else {
+        console.log('This page is not currently controlled ' +
+        'by a service worker.');
+      }
+    });
+
+} else {
+  console.log('Service workers are not supported.');
 }

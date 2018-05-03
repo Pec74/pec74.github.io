@@ -54,16 +54,9 @@ limitations under the License.
           transform: translate(-50%, -50%);
 }
     </style>
+      
     <script>
-export default function ToasterInstance () {
 
-  if (typeof window.ToasterInstance_ !== 'undefined')
-    return Promise.resolve(window.ToasterInstance_);
-
-  window.ToasterInstance_ = new Toaster();
-
-  return Promise.resolve(window.ToasterInstance_);
-}
 
 class Toaster {
 

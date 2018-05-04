@@ -51,7 +51,7 @@
     window.addEventListener('load', function() {
       var outputElement = document.getElementById('output');
   navigator.serviceWorker.register('sw.js', {
-      scope: '././'
+      scope: '/'
     }).then(function(reg) {
       // Registration was successful
       console.log('ServiceWorker registration successful with scope: ', reg.scope);

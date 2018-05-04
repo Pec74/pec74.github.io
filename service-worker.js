@@ -2,7 +2,7 @@ self.addEventListener('install', function(e) {
  e.waitUntil(
    caches.open('video-store').then(function(cache) {
      return cache.addAll([
-       '/pwa-examples/a2hs/index.html'
+       'index.html'
      ]);
    })
  );

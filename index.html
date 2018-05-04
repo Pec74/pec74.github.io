@@ -64,6 +64,7 @@
        
       window.addEventListener('beforeinstallprompt', function(e) {
         outputElement.textContent = 'beforeinstallprompt Event fired';
+                            toast("FIRE !!!");
         
         // e.userChoice will return a Promise. For more details read: http://www.html5rocks.com/en/tutorials/es6/promises/
         e.userChoice.then(function(choiceResult) {
@@ -72,9 +73,11 @@
           
           if(choiceResult.outcome == 'dismissed') {
             console.log('User cancelled homescreen install');
+                                toast("NO WANT !!!");
           }
           else {
             console.log('User added to homescreen');
+                                            toast("WANT !!!");
           }
         });
         
@@ -85,7 +88,7 @@
 </head>
 <body>
 
-  <h1>HELLO WORLD</h1>
+  <h1>HELLO WORLD !!!</h1>
      <pre id=output></pre>
         <!-- Toast msg's  -->
         <div class="toast__container"></div>

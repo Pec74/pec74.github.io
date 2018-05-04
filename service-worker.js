@@ -20,8 +20,7 @@ limitations under the License.
   var filesToCache = [
     '/',
 	'.',
-    'index.html',
-    'pages/404.html'
+    'index.html'
 	];
 
   var staticCacheName = 'pages-cache-v0';

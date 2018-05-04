@@ -1,7 +1,7 @@
 var cacheName = 'test-cache';
 var filesToCache = [
   '/',
-  '/index.html',
+  '/index.html'
 ];
 
 self.addEventListener('install', function(e) {

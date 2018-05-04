@@ -1,59 +1,84 @@
-var VERSION = '1';
+/*
+Copyright 2016 Google Inc.
 
-this.addEventListener('install', function(e) {
-  e.waitUntil(caches.open(VERSION).then(cache => {
-    return cache.addAll([
-      '/',
-      '/index.html',
-      '/service-worker.js',
-    ]);
-  }))
-});
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-this.addEventListener('fetch', function(e) {
-  var tryInCachesFirst = caches.open(VERSION).then(cache => {
-    return cache.match(e.request).then(response => {
-      if (!response) {
-        return handleNoCacheMatch(e);
-      }
-      // Update cache record in the background
-      fetchFromNetworkAndCache(e);
-      // Reply with stale data
-      return response
-    });
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+(function() {
+  'use strict';
+
+  var filesToCache = [
+    '/',
+	  '.',
+    'index.html',
+	];
+
+  var staticCacheName = 'pages-cache-v0';
+
+  self.addEventListener('install', function(event) {
+    console.log('Attempting to install service worker and cache static assets');
+    event.waitUntil(
+      caches.open(staticCacheName)
+      .then(function(cache) {
+        return cache.addAll(filesToCache);
+      })
+    );
   });
-  e.respondWith(tryInCachesFirst);
-});
 
-this.addEventListener('activate', function(e) {
-  e.waitUntil(caches.keys().then(keys => {
-    return Promise.all(keys.map(key => {
-      if (key !== VERSION)
-        return caches.delete(key);
-    }));
-  }));
-});
+  self.addEventListener('fetch', function(event) {
+    console.log('Fetch event for ', event.request.url);
+    event.respondWith(
+      caches.match(event.request).then(function(response) {
+        if (response) {
+          console.log('Found ', event.request.url, ' in cache');
+          return response;
+        }
+        console.log('Network request for ', event.request.url);
+        return fetch(event.request).then(function(response) {
+          if (response.status === 404) {
+//            return caches.match('pages/404.html');
+          console.log('404');
+          }
+          return caches.open(staticCacheName).then(function(cache) {
+            if (event.request.url.indexOf('pages') < 0) {
+              cache.put(event.request.url, response.clone());
+            }
+            return response;
+         });
+        });
+      }).catch(function(error) {
+        console.log('Error, ', error);
+      //  return caches.match('pages/offline.html');
+      })
+    );
+  });
 
-function fetchFromNetworkAndCache(e) {
-  // DevTools opening will trigger these o-i-c requests, which this SW can't handle.
-  // There's probaly more going on here, but I'd rather just ignore this problem. :)
-  // https://github.com/paulirish/caltrainschedule.io/issues/49
-  if (e.request.cache === 'only-if-cached' && e.request.mode !== 'same-origin') return;
+  self.addEventListener('activate', function(event) {
+    console.log('Activating new service worker...');
 
-  return fetch(e.request).then(res => {
-    // foreign requests may be res.type === 'opaque' and missing a url
-    if (!res.url) return res;
-    // regardless, we don't want to cache other origin's assets
-    if (new URL(res.url).origin !== location.origin) return res;
+    var cacheWhitelist = [staticCacheName];
 
-    return caches.open(VERSION).then(cache => {
-      // TODO: figure out if the content is new and therefore the page needs a reload.
-      cache.put(e.request, res.clone());
-      return res;
-    });
-  }).catch(err => console.error(e.request.url, err));
-}
+    event.waitUntil(
+      caches.keys().then(function(cacheNames) {
+        return Promise.all(
+          cacheNames.map(function(cacheName) {
+            if (cacheWhitelist.indexOf(cacheName) === -1) {
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+    );
+  });
 
-function handleNoCacheMatch(e) {
-  return fetchFromNetworkAndCache(e);
-}
+})();

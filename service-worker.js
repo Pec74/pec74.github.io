@@ -1,84 +1,27 @@
-/*
-Copyright 2016 Google Inc.
+var cacheName = 'test-cache';
+var filesToCache = [
+  '/',
+  '/index.html',
+];
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+self.addEventListener('install', function(e) {
+  console.log('[ServiceWorker] Install');
+  e.waitUntil(
+    caches.open(cacheName).then(function(cache) {
+      console.log('[ServiceWorker] Caching app shell');
+      return cache.addAll(filesToCache);
+    })
+  );
+});
 
-    http://www.apache.org/licenses/LICENSE-2.0
+self.addEventListener('activate',  event => {
+  event.waitUntil(self.clients.claim());
+});
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
-(function() {
-  'use strict';
-
-  var filesToCache = [
-    '/',
-	'.',
-    'index.html'
-	];
-
-  var staticCacheName = 'pages-cache-v0';
-
-  self.addEventListener('install', function(event) {
-    console.log('Attempting to install service worker and cache static assets');
-    event.waitUntil(
-      caches.open(staticCacheName)
-      .then(function(cache) {
-        return cache.addAll(filesToCache);
-      })
-    );
-  });
-
-  self.addEventListener('fetch', function(event) {
-    console.log('Fetch event for ', event.request.url);
-    event.respondWith(
-      caches.match(event.request).then(function(response) {
-        if (response) {
-          console.log('Found ', event.request.url, ' in cache');
-          return response;
-        }
-        console.log('Network request for ', event.request.url);
-        return fetch(event.request).then(function(response) {
-          if (response.status === 404) {
-//            return caches.match('pages/404.html');
-          console.log('404');
-          }
-          return caches.open(staticCacheName).then(function(cache) {
-            if (event.request.url.indexOf('pages') < 0) {
-              cache.put(event.request.url, response.clone());
-            }
-            return response;
-         });
-        });
-      }).catch(function(error) {
-        console.log('Error, ', error);
-      //  return caches.match('pages/offline.html');
-      })
-    );
-  });
-
-  self.addEventListener('activate', function(event) {
-    console.log('Activating new service worker...');
-
-    var cacheWhitelist = [staticCacheName];
-
-    event.waitUntil(
-      caches.keys().then(function(cacheNames) {
-        return Promise.all(
-          cacheNames.map(function(cacheName) {
-            if (cacheWhitelist.indexOf(cacheName) === -1) {
-              return caches.delete(cacheName);
-            }
-          })
-        );
-      })
-    );
-  });
-
-})();
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request, {ignoreSearch:true}).then(response => {
+      return response || fetch(event.request);
+    })
+  );
+});

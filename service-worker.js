@@ -1,65 +1,85 @@
-//This is the service worker with the Cache-first network
+/*
+Copyright 2016 Google Inc.
 
-var CACHE = 'pwabuilder-precache';
-var precacheFiles = [
-'/',
- '/index.html'
-    ];
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-//Install stage sets up the cache-array to configure pre-cache content
-self.addEventListener('install', function(evt) {
-  console.log('The service worker is being installed.');
-  evt.waitUntil(precache().then(function() {
-    console.log('[ServiceWorker] Skip waiting on install');
-      return self.skipWaiting();
+    http://www.apache.org/licenses/LICENSE-2.0
 
-  })
-  );
-});
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 
+(function() {
+  'use strict';
 
-//allow sw to control of current page
-self.addEventListener('activate', function(event) {
-console.log('[ServiceWorker] Claiming clients for current page');
-      return self.clients.claim();
+  var filesToCache = [
+    '/',
+	'.',
+    'index.html',
+    'pages/404.html'
+	];
 
-});
+  var staticCacheName = 'pages-cache-v0';
 
-self.addEventListener('fetch', function(evt) {
-  console.log('The service worker is serving the asset.'+ evt.request.url);
-  evt.respondWith(fromCache(evt.request).catch(fromServer(evt.request)));
-  evt.waitUntil(update(evt.request));
-});
-
-
-function precache() {
-  return caches.open(CACHE).then(function (cache) {
-    return cache.addAll(precacheFiles);
+  self.addEventListener('install', function(event) {
+    console.log('Attempting to install service worker and cache static assets');
+    event.waitUntil(
+      caches.open(staticCacheName)
+      .then(function(cache) {
+        return cache.addAll(filesToCache);
+      })
+    );
   });
-}
 
-
-function fromCache(request) {
-  //we pull files from the cache first thing so we can show them fast
-  return caches.open(CACHE).then(function (cache) {
-    return cache.match(request).then(function (matching) {
-      return matching || Promise.reject('no-match');
-    });
+  self.addEventListener('fetch', function(event) {
+    console.log('Fetch event for ', event.request.url);
+    event.respondWith(
+      caches.match(event.request).then(function(response) {
+        if (response) {
+          console.log('Found ', event.request.url, ' in cache');
+          return response;
+        }
+        console.log('Network request for ', event.request.url);
+        return fetch(event.request).then(function(response) {
+          if (response.status === 404) {
+//            return caches.match('pages/404.html');
+          console.log('404');
+          }
+          return caches.open(staticCacheName).then(function(cache) {
+            if (event.request.url.indexOf('pages') < 0) {
+              cache.put(event.request.url, response.clone());
+            }
+            return response;
+         });
+        });
+      }).catch(function(error) {
+        console.log('Error, ', error);
+      //  return caches.match('pages/offline.html');
+      })
+    );
   });
-}
 
+  self.addEventListener('activate', function(event) {
+    console.log('Activating new service worker...');
 
-function update(request) {
-  //this is where we call the server to get the newest version of the 
-  //file to use the next time we show view
-  return caches.open(CACHE).then(function (cache) {
-    return fetch(request).then(function (response) {
-      return cache.put(request, response);
-    });
+    var cacheWhitelist = [staticCacheName];
+
+    event.waitUntil(
+      caches.keys().then(function(cacheNames) {
+        return Promise.all(
+          cacheNames.map(function(cacheName) {
+            if (cacheWhitelist.indexOf(cacheName) === -1) {
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+    );
   });
-}
 
-function fromServer(request){
-  //this is the fallback if it is not in the cahche to go to the server and get it
-return fetch(request).then(function(response){ return response})
-}
+})();

@@ -4,8 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Commits PWA</title>
-  <!--<link rel="stylesheet" type="text/css" href="css/style.css">-->
+  <title>PWA</title>
   <link rel="manifest" href="/manifest.json">
   <style>
     
@@ -49,56 +48,21 @@
   </style>
 </head>
 <body>
-    <div class="app app__layout">
-      <header>
 
-      </header>
-
-      <div class="menu">
-        <div class="menu__header"></div>
-        <ul class="menu__list">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="latest.html">Latest</a></li>
-      </div>
-
-      <div class="menu__overlay"></div>
-
-      <div class="app__content">
-
-        <section class="section">
-          <h3> Stay Up to Date with R-I-L </h3>
-          <!--<img class="profile-pic" src="./images/books.png" alt="Hello, World!">-->
-
-          <p class="home-note">Latest Commits on Resources I like!</a></p>
-        </section>
-
-
-        <div class="fab fab__push">
-          <div class="fab__ripple"></div>
-          <!--<img class="fab__image" src="./images/push-off.png" alt="Push Notification" />-->
-        </div>
-          
+  <h1>HELLO WORLD</h1>
+  
         <!-- Toast msg's  -->
         <div class="toast__container"></div>
-      </div>
-    </div>
 
-    <script>
-  if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js', {
-      scope: '././'
-    }).then(function(reg) {
-      // Registration was successful
-      console.log('ServiceWorker registration successful with scope: ', reg.scope);
-                    toast("We WIN !!!");
-    }, function(err) {
-      // registration failed :
-      console.log('ServiceWorker registration failed: ', err);
-              toast("We fail, but it's success for YOU ! ");
+  <script>
+    if ('serviceWorker' in navigator) {
+      console.log("Will service worker register?");
+      navigator.serviceWorker.register('service-worker.js').then(function(reg){
+        console.log("Yes it did.");
+      }).catch(function(err) {
+        console.log("No it didn't. This happened: ", err)
       });
-  });
-  }
+    }
   </script>
     <script src="/toast.js"></script>
 </body>

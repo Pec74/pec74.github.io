@@ -50,17 +50,17 @@
     <script>
     window.addEventListener('load', function() {
       var outputElement = document.getElementById('output');
-  navigator.serviceWorker.register('sw.js', {
-      scope: '/'
-    }).then(function(reg) {
-      // Registration was successful
-      console.log('ServiceWorker registration successful with scope: ', reg.scope);
-                    toast("We WIN !!!");
-    }, function(err) {
-      // registration failed :
-      console.log('ServiceWorker registration failed: ', err);
-              toast("We fail, but it's success for YOU ! ");
-      });
+
+      navigator.serviceWorker.register('sw.js', { scope: './' })
+        .then(function(r) {
+          console.log('registered service worker');
+                                        toast("REG !!!");
+        })
+        .catch(function(whut) {
+          console.error('uh oh... ');
+          console.error(whut);
+                                        toast("NO REG !!!");
+        });
        
       window.addEventListener('beforeinstallprompt', function(e) {
         outputElement.textContent = 'beforeinstallprompt Event fired';

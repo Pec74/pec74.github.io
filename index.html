@@ -46,15 +46,7 @@
   opacity: 0;
 }
   </style>
-</head>
-<body>
-
-  <h1>HELLO WORLD</h1>
-  
-        <!-- Toast msg's  -->
-        <div class="toast__container"></div>
-
-  <script>
+    <script>
     if ('serviceWorker' in navigator) {
       console.log("Will service worker register?");
       navigator.serviceWorker.register('sw.js').then(function(reg){
@@ -64,6 +56,15 @@
       });
     }
   </script>
+</head>
+<body>
+
+  <h1>HELLO WORLD</h1>
+  
+        <!-- Toast msg's  -->
+        <div class="toast__container"></div>
+
+
     <script src="/toast.js"></script>
 </body>
 </html>

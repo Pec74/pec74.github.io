@@ -46,45 +46,20 @@
   opacity: 0;
 }
   </style>
-
-    <script>
-    window.addEventListener('load', function() {
-      var outputElement = document.getElementById('output');
-
-      navigator.serviceWorker.register('sw.js', { scope: './' })
-        .then(function(r) {
-          console.log('registered service worker');
-                                        toast("REG !!!");
-        })
-        .catch(function(whut) {
-          console.error('uh oh... ');
-          console.error(whut);
-                                        toast("NO REG !!!");
-        });
-       
-      window.addEventListener('beforeinstallprompt', function(e) {
-        outputElement.textContent = 'beforeinstallprompt Event fired';
-                            toast("FIRE !!!");
-        
-        // e.userChoice will return a Promise. For more details read: http://www.html5rocks.com/en/tutorials/es6/promises/
-        e.userChoice.then(function(choiceResult) {
-          
-          console.log(choiceResult.outcome);
-          
-          if(choiceResult.outcome == 'dismissed') {
-            console.log('User cancelled homescreen install');
-                                toast("NO WANT !!!");
-          }
-          else {
-            console.log('User added to homescreen');
-                                            toast("WANT !!!");
-          }
-        });
-        
-      });
       
-    });
-    </script>
+        <script>
+    if ('serviceWorker' in navigator) {
+      console.log("Will service worker register?");
+      navigator.serviceWorker.register('service-worker.js').then(function(reg){
+        console.log("Yes it did.");
+                                                toast("REG !!!");
+      }).catch(function(err) {
+        console.log("No it didn't. This happened: ", err)
+                                                toast("No REG !!!");
+      });
+    }
+  </script>
+
 </head>
 <body>
 

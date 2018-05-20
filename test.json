@@ -1,14 +1,14 @@
 {
-  "items": [
-    {
-     "title": "Best news 1",
-     "title": "Best news 2",
-     "title": "Best news 3",
-     "title": "Best news 4",
-     "title": "Best news 5",
-     "title": "Best news 6",
-     "title": "Best news 7",
-     "title": "Best news 8"
-    }
-  ]
+  "items": [{
+    "values": [{
+      "id": 1,
+      "name": "Slide 1"
+    }, {
+      "id": 2,
+      "name": "Slide 2"
+    }, {
+      "id": 3,
+      "name": "Slide 3"
+    }]
+  }]
 }

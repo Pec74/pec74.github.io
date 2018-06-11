@@ -20,32 +20,30 @@ if ('serviceWorker' in navigator) {
 
 })();
 
+let installPromptEvent;
 
-let deferredPrompt;
- 
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome 67 and earlier from automatically showing the prompt
-  e.preventDefault();
-  // Stash the event so it can be triggered later on the button event.
-  deferredPrompt = e;
-// Update UI by showing a button to notify the user they can add to home screen
-  btn.style.display = 'block';
+window.addEventListener('beforeinstallprompt', (event) => {
+  // Prevent Chrome <= 67 from automatically showing the prompt
+  event.preventDefault();
+  // Stash the event so it can be triggered later.
+  installPromptEvent = event;
+  // Update the install UI to notify the user app can be installed
+  document.querySelector('#install-button').disabled = false;
 });
  
-//button click event to show the promt
-btn.addEventListener('click', (e) => {
-  // hide our user interface that shows our button
-  btn.style.display = 'none';
-  // Show the prompt
-  deferredPrompt.prompt();
+btnInstall.addEventListener('click', () => {
+  // Update the install UI to remove the install button
+  document.querySelector('#install-button').disabled = true;
+  // Show the modal add to home screen dialog
+  installPromptEvent.prompt();
   // Wait for the user to respond to the prompt
-  deferredPrompt.userChoice
-    .then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the prompt');
-      } else {
-        console.log('User dismissed the prompt');
-      }
-      deferredPrompt = null;
-    });
+  installPromptEvent.userChoice.then((choice) => {
+    if (choice.outcome === 'accepted') {
+      console.log('User accepted the A2HS prompt');
+    } else {
+      console.log('User dismissed the A2HS prompt');
+    }
+    // Clear the saved prompt since it can't be used again
+    installPromptEvent = null;
+  });
 });

@@ -29,13 +29,13 @@ window.addEventListener('beforeinstallprompt', (event) => {
   installPromptEvent = event;
   // Update the install UI to notify the user app can be installed
   //document.querySelector('#install-button').disabled = false;
-    btn.style.display = 'block';
+    ad2hs-prompt.style.display = 'block';
 });
  
-btn.addEventListener('click', () => {
+ad2hs-prompt.addEventListener('click', () => {
   // Update the install UI to remove the install button
   //document.querySelector('#install-button').disabled = true;
-    btn.style.display = 'none';
+    ad2hs-prompt.style.display = 'none';
   // Show the modal add to home screen dialog
   installPromptEvent.prompt();
   // Wait for the user to respond to the prompt
